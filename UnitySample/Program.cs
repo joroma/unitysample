@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnitySample;
+using Microsoft.Practices.Unity;
+using Microsoft.Practices.ObjectBuilder2;
 
 namespace UnitySample
 {
@@ -11,6 +13,26 @@ namespace UnitySample
     {
         static void Main(string[] args)
         {
+            //
+            var unityContainer = new UnityContainer();
+
+            //Register IGame so when dependency is detected,
+            // it provides a Trivial Pursuit instance
+            unityContainer.RegisterType<IGame, TrivialPursuit>();
+
+            // Instantiate a table using unity
+            var table = unityContainer.Resolve<Table>();
+
+            table.AddPlayer();
+            table.AddPlayer();
+            table.Play();
+
+            Console.WriteLine(table.GameStatus());
+            Console.ReadLine();
+
+
+
+
         }
     }
 
@@ -123,6 +145,36 @@ namespace UnitySample
         }
 
         #endregion
+    }
+
+    public class Table
+    {
+        private IGame game;
+
+        public Table (IGame game)
+        {
+            this.game = game;
+        }
+
+        public string GameStatus()
+        {
+            return game.result();
+        }
+
+        public void AddPlayer()
+        {
+            game.AddPlayer();
+        }
+
+        public void RemovePlayer()
+        {
+            game.RemovePlayer();
+        }
+
+        public void Play()
+        {
+            game.play();
+        }
     }
 
 }
